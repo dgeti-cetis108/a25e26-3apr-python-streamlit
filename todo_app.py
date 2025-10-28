@@ -37,6 +37,25 @@ with st.form("frm_agregar", clear_on_submit=True):
 
 st.subheader("Tareas")
 
-# unpack enumerations
-for i, tarea in enumerate(st.session_state.tareas):
-    st.checkbox(tarea, key=f"tarea_{i}")
+if st.session_state.tareas:
+    # unpack enumerations
+    for i, tarea in enumerate(st.session_state.tareas):
+        st.checkbox(tarea, key=f"tarea_{i}")
+
+    # botón eliminar para limpiar las tareas completadas
+    eliminar = st.button("Eliminar las seleccionadas")
+    if eliminar:
+        nuevas = []
+        for i, tarea in enumerate(st.session_state.tareas):
+            marcado = st.session_state.get(f"tarea_{i}", False)
+            if not marcado:
+                nuevas.append(tarea)
+        st.session_state.tareas = nuevas
+
+        # eliminar estados de selección
+        for k in list(st.session_state.keys()):
+            if str(k).startswith("tarea_"):
+                del st.session_state[k]
+        st.rerun()
+else:
+    st.info("Agrega tareas nuevas")
